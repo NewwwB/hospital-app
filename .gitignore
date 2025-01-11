@@ -1,0 +1,9 @@
+/backend-image.tar
+/frontend-image.tar
+/postgres-image.tar
+
+.idea
+
+backend/node_modules
+frontend/node_modules
+

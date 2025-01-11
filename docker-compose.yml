@@ -1,0 +1,52 @@
+version: '3.8'
+
+networks:
+  app-network: # Custom network for all services
+    driver: bridge
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+  backend:
+    depends_on:
+      - postgres
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://postgres:mysecretpassword@postgres:5432/mydb
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    command: >
+      sh -c "
+      until pg_isready -h postgres -p 5432 -U postgres; do
+        echo 'Waiting for PostgreSQL...';
+        sleep 2;
+      done;
+      npx prisma migrate deploy && npm start
+      "
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
