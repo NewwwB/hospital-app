@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+
+const URL= process.env.BACKEND_URL;
+if(!URL) console.error(URL + ": BACKEND_URL is required" );
+
 const api = axios.create({
-    baseURL: 'http://localhost:3000/api',
+    baseURL: `${URL}/api`,
 });
 // Add the token to every request header
 api.interceptors.request.use((config) => {

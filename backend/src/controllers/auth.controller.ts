@@ -11,7 +11,13 @@ class AuthController {
     async register(req: Request, res: Response) {
         const { email, password, role } = req.body;
 
+
         try {
+            if(!email || !password || !role) {
+                res.status(400).send({error: 'Email and password is required'});
+                return;
+            }
+
             // Hash the password
             const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -28,7 +34,7 @@ class AuthController {
             // Return a success response
             res.status(201).json({ message: 'User registered successfully!', user });
         } catch (err) {
-            res.status(500).json({ message: 'Something went wrong' });
+            res.status(500).json({ message: 'Something went wrong:'+ err });
         }
     }
 
@@ -68,7 +74,7 @@ class AuthController {
             // Return the token
             res.json({ token, role: user.role });
         } catch (err) {
-            res.status(500).json({ message: 'Something went wrong' });
+            res.status(500).json({ message: 'Something went wrong: ' + err });
         }
     }
 }

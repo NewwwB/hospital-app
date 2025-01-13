@@ -9,33 +9,28 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    environment:
+      BACKEND_URL: "http://my-backend"
     ports:
       - "80:80"
     networks:
       - app-network
 
   backend:
-    depends_on:
-      - postgres
+    container_name:
+      my-backend
     build:
       context: ./backend
       dockerfile: Dockerfile
     environment:
-      DATABASE_URL: postgresql://postgres:mysecretpassword@postgres:5432/mydb
+      DATABASE_URL: postgresql://postgres:mysecretpassword@our-postgres/mydb
     ports:
       - "3000:3000"
     networks:
       - app-network
-    command: >
-      sh -c "
-      until pg_isready -h postgres -p 5432 -U postgres; do
-        echo 'Waiting for PostgreSQL...';
-        sleep 2;
-      done;
-      npx prisma migrate deploy && npm start
-      "
 
   postgres:
+    container_name: our-postgres
     image: postgres
     environment:
       POSTGRES_USER: postgres
@@ -45,8 +40,3 @@ services:
       - "5432:5432"
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5

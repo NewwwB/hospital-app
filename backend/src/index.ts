@@ -19,6 +19,10 @@ app.options('*', cors());
 // Middleware
 app.use(bodyParser.json());
 
+app.get('/', (req, res) => {
+    res.send('hello world');
+})
+
 // Routes
 app.use('/api/patients', patientRoutes);
 app.use('/api', authRoutes);

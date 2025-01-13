@@ -1,5 +1,5 @@
 # Use a lightweight Node.js image
-FROM node:18-alpine
+FROM node:22-alpine
 
 # Set the working directory
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY . .
 RUN npx prisma generate
 
 # Apply Prisma migrations
-RUN npx prisma migrate deploy
+#RUN npx prisma migrate deploy
 
 
 # Expose the backend port
