@@ -1,24 +1,19 @@
-# Use a lightweight Node.js image
-FROM node:18-alpine
 
-# Set the working directory
+FROM node:22-alpine
+
 WORKDIR /app
 
-# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
 RUN npm install
 
-# Copy the rest of the app
 COPY . .
 
-# Build the application
 RUN npm run build
 
-# Use an Nginx server to serve the static files
 FROM nginx
 COPY --from=0 /app/dist /usr/share/nginx/html
+COPY --from=0 /app/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80
 EXPOSE 80

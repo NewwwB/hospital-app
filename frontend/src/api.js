@@ -1,13 +1,9 @@
 import axios from 'axios';
 
-
-const URL= process.env.BACKEND_URL;
-if(!URL) console.error(URL + ": BACKEND_URL is required" );
-
 const api = axios.create({
-    baseURL: `${URL}/api`,
+    baseURL: `/api`,
 });
-// Add the token to every request header
+
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token'); // Get token from localStorage (or cookies)
 

@@ -10,20 +10,24 @@ COPY package*.json ./
 RUN apk add --no-cache --virtual .gyp python3 make g++ postgresql-dev
 
 # Install dependencies
-RUN npm install
+RUN npm ci
 
 # Copy the rest of the app
 COPY . .
 
+ARG DATABASE_URL
+
+ENV DATABASE_URL = ${DATABASE_URL}
+
 # Generate Prisma client
 RUN npx prisma generate
 
-# Apply Prisma migrations
-#RUN npx prisma migrate deploy
+
+RUN npm run build
 
 
 # Expose the backend port
 EXPOSE 3000
 
 # Start the server
-CMD ["npm", "start"]
+CMD ["sh", "-c", "[ ! -f /app/.migrated ] && npx prisma migrate deploy && touch /app/.migrated; npm start"]
